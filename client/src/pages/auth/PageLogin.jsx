@@ -1,9 +1,14 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { GlobalContext } from '../../context/GlobalContext';
 
 export function PageLogin() {
+    const { updateLoginStatus } = useContext(GlobalContext);
+    const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isPasswordVisible, setPasswordVisible] = useState(false);
+
 
     function handleEmailChange(e) {
         setEmail(e.target.value);
@@ -20,8 +25,27 @@ export function PageLogin() {
     function handleFormSubmit(e) {
         e.preventDefault();
 
-        console.log('-----------------------');
-        console.log(email, password);
+        if (email === '' || password === '') {
+            console.error('ERROR: blogi formos duomenys');
+            return;
+        }
+
+        fetch('http://localhost:4821/api/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify({ email, password }),
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.loggedIn === true) {
+                    updateLoginStatus(true);
+                    navigate('/account');
+                }
+            })
+            .catch(err => console.error(err));
     }
 
     return (

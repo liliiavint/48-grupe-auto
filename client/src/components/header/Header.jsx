@@ -1,7 +1,30 @@
 import { Link } from 'react-router-dom';
 import logo from '../../assets/react.svg';
+import { GlobalContext } from '../../context/GlobalContext';
+import { useContext } from 'react';
 
 export function Header() {
+    const { loginStatus, updateLoginStatus, totalSumToPay } = useContext(GlobalContext);
+
+    function handleLogoutClick() {
+        updateLoginStatus(false);
+    }
+
+    const guestActions = (
+        <div className="col-md-3 text-end">
+            <Link to="/login" className="btn btn-outline-primary me-2">Login</Link>
+            <Link to="/register" className="btn btn-primary">Register</Link>
+        </div>
+    );
+
+    const userActions = (
+        <div className="col-md-3 text-end">
+            <span>Cart value: {totalSumToPay} Eur</span>
+            <span>Hello, user!</span>
+            <button onClick={handleLogoutClick} className="btn btn-primary">Logout</button>
+        </div>
+    );
+
     return (
         <div className="container">
             <header className="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
@@ -17,10 +40,7 @@ export function Header() {
                     <Link to="/about" className="nav-link px-2">About</Link>
                 </ul>
 
-                <div className="col-md-3 text-end">
-                    <Link to="/login" className="btn btn-outline-primary me-2">Login</Link>
-                    <Link to="/register" className="btn btn-primary">Register</Link>
-                </div>
+                {loginStatus ? userActions : guestActions}
             </header>
         </div>
     );

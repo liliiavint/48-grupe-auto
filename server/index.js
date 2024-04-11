@@ -6,7 +6,7 @@ import bodyParser from 'body-parser';
 const app = express();
 
 const corsOptions = {
-    origin: 'http://localhost:4840'
+    origin: 'http://localhost:4838'
 };
 const helmetOptions = {
     crossOriginResourcePolicy: false
@@ -44,10 +44,28 @@ app.post('/api/register', (req, res) => {
 });
 
 app.post('/api/login', (req, res) => {
-    console.log(req.body);
+    console.log('LOGIN:', req.body);
+
+    let userExists = false;
+
+    for (const user of users) {
+        if (user.email === req.body.email &&
+            user.password === req.body.password) {
+            userExists = true;
+            break;
+        }
+    }
+
+    if (userExists) {
+        return res.send(JSON.stringify({
+            message: 'User successfully logged in',
+            loggedIn: true,
+        }));
+    }
 
     return res.send(JSON.stringify({
-        message: 'Login API'
+        message: 'Such user does not exist',
+        loggedIn: false,
     }));
 });
 
@@ -65,6 +83,6 @@ app.use((err, req, res, next) => {
     res.status(500).send('Something broke!');
 });
 
-app.listen(4821, () => {
-    console.log(`\nhttp://localhost:4821`);
+app.listen(4838, () => {
+    console.log(`\nhttp://localhost:4838`);
 });
